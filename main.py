@@ -1,54 +1,39 @@
-def judge(board):
-    player1win = -3
-    player2win = 3
-    # 縦判定
-    for x in range(3):
-        result = 0
-        for y in range(3):
-            result += board[y][x]
-        if result == player1win:
-            return 0
-        elif result == player2win:
-            return 1
-    # 横判定
-    for x in range(3):
-        result = 0
-        for y in range(3):
-            result += board[x][y]
-        if result == player1win:
-            return 0
-        elif result == player2win:
-            return 1
-    # 左斜めチェック
-    result = 0
-    for x in range(3):
-        result += board[x][x]
-        if result == player1win:
-            return 0
-        elif result == player2win:
-            return 1
-    # 右斜めチェック
-    result = 0
-    for x, y in zip(range(3), range(2, -1, -1)):
-        result += board[x][y]
-        if result == player1win:
-            return 0
-        elif result == player2win:
-            return 1
+def judge(board, player, x, y):
+    number_of_available_directions_range = range(0, 3)
+    middle = [1, 1]
+    condition_to_win = 3
+    horizontal = 0
+    vertical = 0
+    diagonal = 0
+    
+    if [x, y] == middle:
+        number_of_available_directions_range = range(1, 4) 
+    
+    for direction in number_of_available_directions_range:
+        adjacent_y = abs(x - direction)
+        adjacent_x = abs(y - direction)
+        horizontal_value = board[x][adjacent_y]
+        vertical_value = board[adjacent_x][y]
+        diagonal_value = board[adjacent_x][adjacent_y]
+        if horizontal_value == player:
+            horizontal += 1
+        if vertical_value == player:
+            vertical += 1
+        if diagonal_value == player:
+            diagonal += 1
+    if horizontal == condition_to_win or vertical == condition_to_win or diagonal == condition_to_win:
+        return True
+    
+    return False
 
 def drawBoard(board):
-    pieces = {-1: 'o', 0: ' ', 1: 'x'}
+    pieces = {-1: ' ', 0: 'o', 1: 'x'}
     for line in board:
         print(pieces[line[0]], '|', pieces[line[1]], '|', pieces[line[2]])
         
 
 def game():
-    board = [
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0]
-    ]
-    figures = [-1,1]
+    board = [[-1, -1, -1],[-1, -1, -1],[-1, -1, -1]]
     player = 0
     movements = 0
     while True:
@@ -63,29 +48,37 @@ def game():
         except:
             print('正しい値を入力してください。')
             continue
-        if board[x][y] != 0:
+        if board[x][y] != -1:
             print('別のマスを指定してください。')
             continue
-        board[x][y] = figures[player]
-        if player >= 1:
-            player = 0
-        else:
-            player += 1
+        board[x][y] = player
 
-        judgement = judge(board)
-        if judgement == 0:
+        have_winner = judge(board, player, x, y)
+
+        if have_winner:
             drawBoard(board)
-            print('プレイヤー１の勝ち')
-            break
-        elif judgement == 1:
-            drawBoard(board)
-            print('プレイヤー２の勝ち')
+            print(f"プレイヤー{player + 1}の勝ち")
             break
         movements += 1
         if movements >= 9:
             drawBoard(board)
             print('引き分けです。')
             break
+        if player:
+            player = 0
+        else:
+            player = 1
 
 if __name__ == '__main__':
+    # print(-1 + -1 + -1, 1 + 1 + 1)
+    # examine([
+    #     ['0,0', '0,1', '0,2'],
+    #     ['1,0', '1,1', '1,2'],
+    #     ['2,0', '2,1', '2,2']
+    # ], 1, 1)
+    # print(judge([
+    #     [0, -1, 0],
+    #     [1, 1, 0],
+    #     [0, 0, 0]
+    # ], 1, 0))
     game()
