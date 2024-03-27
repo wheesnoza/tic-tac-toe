@@ -54,11 +54,10 @@ def game():
     while True:
         drawBoard(board)
         try:
-            inp = input(f"プレイヤー{player + 1}の取るマスの座標を指定してください。")
-            if int(inp) == -1:
+            coordinates = input(f"プレイヤー{player + 1}の取るマスの座標を指定してください。").split(',')
+            if int(coordinates[0]) == -1:
                 print('ゲームを終了します。')
                 break
-            coordinates = inp.split(',')
             x = int(coordinates[0])
             y = int(coordinates[1])
         except:
