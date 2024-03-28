@@ -1,36 +1,38 @@
 # Python tic-tac-toe console game
 ```
-python main.py
-  |   |
-  |   |
-  |   |
-プレイヤー1の取るマスの座標を指定してください。0,0
-o |   |
-  |   |
-  |   |
-プレイヤー2の取るマスの座標を指定してください。1,1
-o |   |
-  | x |
-  |   |
-プレイヤー1の取るマスの座標を指定してください。2,2
-o |   |
-  | x |
-  |   | o
-プレイヤー2の取るマスの座標を指定してください。2,0
-o |   |
-  | x |
-x |   | o
-プレイヤー1の取るマスの座標を指定してください。0,2
-o |   | o
-  | x |
-x |   | o
-プレイヤー2の取るマスの座標を指定してください。1,2
-o |   | o
-  | x | x
-x |   | o
-プレイヤー1の取るマスの座標を指定してください。0,1
-o | o | o
-  | x | x
-x |   | o
-プレイヤー１の勝ち
+Enter the dimensions of the board (example: 3):3
+Enter the player 1 name and the piece to use (ecample: John,o): H,o
+Enter the player 2 name and the piece to use (ecample: John,o): J,x
+ | |
+ | |
+ | |
+H movement(example: 1,1): 1,1
+ | |
+ |o|
+ | |
+J movement(example: 1,1): 0,0
+x| |
+ |o|
+ | |
+H movement(example: 1,1): 2,0
+x| |
+ |o|
+o| |
+J movement(example: 1,1): 1,0
+x| |
+x|o|
+o| |
+H movement(example: 1,1): 2,2
+x| |
+x|o|
+o| |o
+J movement(example: 1,1): 2,1
+x| |
+x|o|
+o|x|o
+H movement(example: 1,1): 0,2
+x| |o
+x|o|
+o|x|o
+H wins.
 ```

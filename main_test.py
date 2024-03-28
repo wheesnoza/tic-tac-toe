@@ -1,142 +1,62 @@
 import main
+import pytest
 
-def test_vertical_judgement():
-    mock_board = [
-        [1, 0, 0],
-        [1, 0, 0],
-        [1, 0, 0],
-    ]
+def test_non_middle_square_board_can_not_be_builded():
+    with pytest.raises(main.InvalidBoardDimensions):
+        main.BoardBuilder(2).build()
 
-    assert main.judge(mock_board) == 1
+def test_board_with_dimensions_out_of_range_can_not_be_builded():
+    with pytest.raises(main.BoardDimensionsOutOfRange):
+        main.BoardBuilder(9).build()
 
-    mock_board = [
-        [0, 1, 0],
-        [0, 1, 0],
-        [0, 1, 0],
-    ]
+def test_board_can_be_builded():
+    board = main.BoardBuilder(3).build()
+    assert isinstance(board, main.Board)
 
-    assert main.judge(mock_board) == 1
+def test_horizontal_is_tree_in_line():
+    piece = main.Piece('o')
+    squares = main.SquareList([
+        [main.Square(main.Position(0,0)).take(piece),main.Square(main.Position(0,1)),main.Square(main.Position(0,2))],
+        [main.Square(main.Position(1,0)).take(piece),main.Square(main.Position(1,1)),main.Square(main.Position(1,2))],
+        [main.Square(main.Position(2,0)).take(piece),main.Square(main.Position(1,2)),main.Square(main.Position(2,2))],
+    ])
 
-    mock_board = [
-        [0, 0, 1],
-        [0, 0, 1],
-        [0, 0, 1],
-    ]
+    boundary_range = main.BoundaryRange(0, 3)
+    board = main.Board(3, squares, boundary_range)
+    assert main.is_tree_in_line(board, main.Square(main.Position(0,0)).take(piece)) == True
 
-    assert main.judge(mock_board) == 1
+def test_vertical_is_tree_in_line():
+    piece = main.Piece('o')
+    squares = main.SquareList([
+        [main.Square(main.Position(0,0)).take(piece),main.Square(main.Position(0,1)).take(piece),main.Square(main.Position(0,2)).take(piece)],
+        [main.Square(main.Position(1,0)),main.Square(main.Position(1,1)),main.Square(main.Position(1,2))],
+        [main.Square(main.Position(2,0)),main.Square(main.Position(1,2)),main.Square(main.Position(2,2))],
+    ])
 
-    mock_board = [
-        [-1, 0, 0],
-        [-1, 0, 0],
-        [-1, 0, 0],
-    ]
+    boundary_range = main.BoundaryRange(0, 3)
+    board = main.Board(3, squares, boundary_range)
+    assert main.is_tree_in_line(board, main.Square(main.Position(0,0)).take(piece)) == True
 
-    assert main.judge(mock_board) == 0
+def test_diagonal_is_tree_in_line():
+    piece = main.Piece('o')
+    squares = main.SquareList([
+        [main.Square(main.Position(0,0)).take(piece),main.Square(main.Position(0,1)),main.Square(main.Position(0,2))],
+        [main.Square(main.Position(1,0)),main.Square(main.Position(1,1)).take(piece),main.Square(main.Position(1,2))],
+        [main.Square(main.Position(2,0)),main.Square(main.Position(1,2)),main.Square(main.Position(2,2)).take(piece)],
+    ])
 
-    mock_board = [
-        [0, -1, 0],
-        [0, -1, 0],
-        [0, -1, 0],
-    ]
+    boundary_range = main.BoundaryRange(0, 3)
+    board = main.Board(3, squares, boundary_range)
 
-    assert main.judge(mock_board) == 0
+    assert main.is_tree_in_line(board, main.Square(main.Position(0,0)).take(piece)) == True
 
-    mock_board = [
-        [0, 0, -1],
-        [0, 0, -1],
-        [0, 0, -1],
-    ]
+    piece = main.Piece('o')
+    squares = main.SquareList([
+        [main.Square(main.Position(0,0)),main.Square(main.Position(0,1)),main.Square(main.Position(0,2)).take(piece)],
+        [main.Square(main.Position(1,0)),main.Square(main.Position(1,1)).take(piece),main.Square(main.Position(1,2))],
+        [main.Square(main.Position(2,0)).take(piece),main.Square(main.Position(1,2)),main.Square(main.Position(2,2))],
+    ])
 
-    assert main.judge(mock_board) == 0
+    boundary_range = main.BoundaryRange(0, 3)
+    board = main.Board(3, squares, boundary_range)
 
-def test_horizontal_judgement():
-    mock_board = [
-        [1, 1, 1],
-        [0, 0, 0],
-        [0, 0, 0],
-    ]
-
-    assert main.judge(mock_board) == 1
-
-    mock_board = [
-        [0, 0, 0],
-        [1, 1, 1],
-        [0, 0, 0],
-    ]
-
-    assert main.judge(mock_board) == 1
-
-    mock_board = [
-        [0, 0, 0],
-        [0, 0, 0],
-        [1, 1, 1],
-    ]
-
-    assert main.judge(mock_board) == 1
-
-    mock_board = [
-        [-1, -1, -1],
-        [0, 0, 0],
-        [0, 0, 0],
-    ]
-
-    assert main.judge(mock_board) == 0
-
-    mock_board = [
-        [0, 0, 0],
-        [-1, -1, -1],
-        [0, 0, 0],
-    ]
-
-    assert main.judge(mock_board) == 0
-
-    mock_board = [
-        [0, 0, 0],
-        [0, 0, 0],
-        [-1, -1, -1],
-    ]
-
-    assert main.judge(mock_board) == 0
-
-def test_left_diagonal_judgement():
-    mock_board = [
-        [1, 0, 0],
-        [0, 1, 0],
-        [0, 0, 1],
-    ]
-
-    assert main.judge(mock_board) == 1
-
-    mock_board = [
-        [-1, 0, 0],
-        [0, -1, 0],
-        [0, 0, -1],
-    ]
-
-    assert main.judge(mock_board) == 0
-
-def test_right_diagonal_judgement():
-    mock_board = [
-        [0, 0, 1],
-        [0, 1, 0],
-        [1, 0, 0],
-    ]
-
-    assert main.judge(mock_board) == 1
-
-    mock_board = [
-        [0, 0, -1],
-        [0, -1, 0],
-        [-1, 0, 0],
-    ]
-
-    assert main.judge(mock_board) == 0
-
-def test_draw_judgement():
-    mock_board = [
-        [1, -1, 1],
-        [-1, 1, -1],
-        [-1, 1, -1],
-    ]
-
-    assert main.judge(mock_board) == None
