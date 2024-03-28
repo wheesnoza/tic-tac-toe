@@ -1,84 +1,160 @@
-def judge(board, player, x, y):
-    number_of_available_directions_range = range(0, 3)
-    middle = [1, 1]
-    condition_to_win = 3
-    horizontal = 0
-    vertical = 0
-    diagonal = 0
+from typing import List
+
+class InvalidBoardDimension(Exception):
+    def __init__(self, message="The board should have a dimension where have a center square."):
+        self.message = message
+        super().__init__(self.message)
+
+class Piece:
+    def __init__(self, value: str):
+        self.value = value
+
+    def __str__(self):
+        return self.value
+
+class Player:
+    def __init__(self, name: str, piece: Piece):
+        self.name = name
+        self.piece = piece
+
+class Position:
+    def __init__(self, x: int, y: int):
+        self.x = int(x)
+        self.y = int(y)
     
-    if [x, y] == middle:
-        number_of_available_directions_range = range(1, 4) 
+    def equal(self, another_position: 'Position'):
+        return self.x == another_position.x and self.y == another_position.y
+
+class Square:
+    piece = Piece(' ')
+    def __init__(self, position: Position):
+        self.position = position
+    
+    def take(self, piece: Piece):
+        self.piece = piece
+        return self
+
+    def isNotEmpty(self):
+        return self.piece != ' '
+
+class SquareList(List[List[Square]]):
+    def __init__(self, *args: List[List[Square]], **kwargs: List[List[Square]]):
+        super().__init__(*args, **kwargs)
+    
+    def at(self, x: int, y: int) -> Square:
+        return self[x][y]
+
+    def at_position(self, position: Position) -> Square:
+        return self.at(position.x, position.y)
+
+class Board:
+    def __init__(self, squares: SquareList):
+        self.squares = squares
+
+class BoardBuilder:
+    def __init__(self, dimensions: int):
+        if not dimensions % 2:
+            raise InvalidBoardDimension
+        self.dimensions = dimensions
+    
+    def build(self):
+        squares = SquareList([Square(Position(x, y)) for y in range(self.dimensions)] for x in range(self.dimensions))
+        return Board(squares)
+
+class Line(List[Square]):
+    def __init__(self, *args: List[Square], **kwargs: List[Square]):
+        super().__init__(*args, **kwargs)
+    
+    def is_all_equals(self):
+        return all(square.piece == self[0].piece for square in self)
+    
+class Lines:
+    horizontal: Line
+    vertical: Line
+    diagonal: Line
+    def __init__(self, horizontal: Line, vertical: Line, diagonal: Line):
+        self.horizontal = horizontal
+        self.vertical = vertical
+        self.diagonal = diagonal
+
+
+
+def rowDrawer(row: List[Square]):
+        print('|'.join([str(square.piece) for square in row]))
+    
+
+def boardDrawer(board: Board):
+    for square in board.squares:
+        rowDrawer(square)
+
+
+def adjacent_lines(board: Board, square: Square) -> Lines:
+    number_of_available_directions_range = range(0, 3)
+    position = square.position
+    middle = Position(1, 1)
+    
+    if position.equal(middle):
+        number_of_available_directions_range = range(1, 4)
+
+    horizontal_adjacent_squares = Line()
+    vertical_adjacent_squares = Line()
+    diagonal_adjacent_squares = Line()
     
     for direction in number_of_available_directions_range:
-        adjacent_y = abs(x - direction)
-        adjacent_x = abs(y - direction)
-        horizontal_value = board[x][adjacent_y]
-        vertical_value = board[adjacent_x][y]
-        diagonal_value = board[adjacent_x][adjacent_y]
-        if horizontal_value == player:
-            horizontal += 1
-        if vertical_value == player:
-            vertical += 1
-        if diagonal_value == player:
-            diagonal += 1
-    if horizontal == condition_to_win or vertical == condition_to_win or diagonal == condition_to_win:
-        return True
+        adjacent_x = abs(position.y - direction)
+        adjacent_y = abs(position.x - direction)
+        horizontalSquare = board.squares.at(position.x, adjacent_y)
+        verticalSquare = board.squares.at(adjacent_x, position.y)
+        diagonalSquare = board.squares.at(position.x, adjacent_y)
+        if horizontalSquare.isNotEmpty():
+            horizontal_adjacent_squares.append(horizontalSquare)
+        if verticalSquare.isNotEmpty():
+            vertical_adjacent_squares.append(verticalSquare)
+        if diagonalSquare.isNotEmpty():
+            diagonal_adjacent_squares.append(diagonalSquare)
     
-    return False
+    return Lines(horizontal_adjacent_squares, vertical_adjacent_squares, diagonal_adjacent_squares)
 
-def drawBoard(board):
-    pieces = {-1: ' ', 0: 'o', 1: 'x'}
-    for line in board:
-        print(pieces[line[0]], '|', pieces[line[1]], '|', pieces[line[2]])
-        
 
-def game():
-    board = [[-1, -1, -1],[-1, -1, -1],[-1, -1, -1]]
-    player = 0
-    movements = 0
-    while True:
-        drawBoard(board)
-        try:
-            coordinates = input(f"プレイヤー{player + 1}の取るマスの座標を指定してください。").split(',')
-            if int(coordinates[0]) == -1:
-                print('ゲームを終了します。')
-                break
-            x = int(coordinates[0])
-            y = int(coordinates[1])
-        except:
-            print('正しい値を入力してください。')
-            continue
-        if board[x][y] != -1:
-            print('別のマスを指定してください。')
-            continue
-        board[x][y] = player
-
-        have_winner = judge(board, player, x, y)
-
-        if have_winner:
-            drawBoard(board)
-            print(f"プレイヤー{player + 1}の勝ち")
-            break
-        movements += 1
-        if movements >= 9:
-            drawBoard(board)
-            print('引き分けです。')
-            break
-        if player:
-            player = 0
-        else:
-            player = 1
+def tree_in_line():
+    adjacent_squares = adjacent_lines(board, square)
+    return adjacent_squares.horizontal.is_all_equals() or adjacent_squares.vertical.is_all_equals() or adjacent_squares.diagonal.is_all_equals()
 
 if __name__ == '__main__':
-    # print(-1 + -1 + -1, 1 + 1 + 1)
-    # examine([
-    #     ['0,0', '0,1', '0,2'],
-    #     ['1,0', '1,1', '1,2'],
-    #     ['2,0', '2,1', '2,2']
-    # ], 1, 1)
-    # print(judge([
-    #     [0, -1, 0],
-    #     [1, 1, 0],
-    #     [0, 0, 0]
-    # ], 1, 0))
-    game()
+    # Define the board size.
+    dimensions = int(input('Enter the dimensions of the board (example: 3):'))
+    
+    # Define the 2 players of the game with name and piece.
+    name, piece = input('Enter the player 1 name and the piece to use (ecample: John,o): ').split(',')
+    player1 = Player(name, Piece(piece))
+    name, piece = input('Enter the player 2 name and the piece to use (ecample: John,o): ').split(',')
+    player2 = Player(name, Piece(piece))
+    
+    # Define the max movements until the game end.
+    remaining_movements = dimensions ** 2
+    
+    # Define all players list.
+    players = [player2, player1]
+
+    # Build the board.
+    board = BoardBuilder(dimensions).build()
+
+    # Start and continue the game while there are remaining movements.
+    while remaining_movements > 0:
+        player = players[remaining_movements % 2]
+        boardDrawer(board)
+        x, y = input(f"{player.name} movement(example: 1,1): ").split(',')
+        position_to_take = Position(x, y)
+        square = board.squares.at_position(position_to_take)
+        square.take(player.piece)
+        remaining_movements -= 1
+
+        if tree_in_line():
+            boardDrawer(board)
+            print(f"{player.name} wins.")
+            break
+    
+    # If not have more remaining movements then is a draw.
+    if not remaining_movements:
+        boardDrawer(board)
+        print('Draw')
