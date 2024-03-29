@@ -126,5 +126,5 @@ def is_tree_in_line(board: Board, square: Square):
     lines = find_adjacent_square_lines(board, square)
 
     for line in lines.all():
-        if len([square for square in line if square.is_not_blank() and square.piece.is_equal(square.piece)]) == board.dimensions:
+        if len([adjacent_square for adjacent_square in line if adjacent_square.is_not_blank() and adjacent_square.piece.is_equal(square.piece)]) == board.dimensions:
             return True
