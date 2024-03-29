@@ -102,6 +102,7 @@ def find_adjacent_square_lines(board: Board, square: Square) -> Lines:
     # Board boundary range. Left to Right at positive and Right to left as negative. 
     positive_direction = board.boundary_range.range
     negative_direction = positive_direction[::-1] # Reverse positive direction for negative directions.
+    directions = zip(positive_direction, negative_direction)
 
     # Declare variables for all available negative and poitive directions like horizontal, vertical, up left diagonal and down left diagonal
     horizontal_adjacent_squares = Line()
@@ -109,11 +110,15 @@ def find_adjacent_square_lines(board: Board, square: Square) -> Lines:
     left_diagonal_adjacent_squares = Line()
     right_diagonal_adjacent_squares = Line()
 
-    for direction in board.boundary_range.range:
-        vertical_adjacent_squares.append(board.squares.at(positive_direction[direction], placed_position.y))
-        horizontal_adjacent_squares.append(board.squares.at(placed_position.x, positive_direction[direction]))
-        left_diagonal_adjacent_squares.append(board.squares.at(positive_direction[direction], positive_direction[direction]))
-        right_diagonal_adjacent_squares.append(board.squares.at(negative_direction[direction], positive_direction[direction]))
+    for positive, negative in directions:
+        # Get the next square vertically adjacent to the square where the piece was placed and append into vertical djacent squares list.
+        vertical_adjacent_squares.append(board.squares.at(positive, placed_position.y))
+        # Get the next square horizontally adjacent to the square where the piece was placed and append into horizontal djacent squares list.
+        horizontal_adjacent_squares.append(board.squares.at(placed_position.x, positive))
+        # Get the next square to right digonally adjacent to the square where the piece was placed and append into left diagonal djacent squares list.
+        left_diagonal_adjacent_squares.append(board.squares.at(positive, positive))
+        # Get the next square to left digonally adjacent to the square where the piece was placed and append into right diagonal djacent squares list.
+        right_diagonal_adjacent_squares.append(board.squares.at(positive, negative))
     
     return Lines(vertical_adjacent_squares, horizontal_adjacent_squares, left_diagonal_adjacent_squares,right_diagonal_adjacent_squares)
 
