@@ -95,12 +95,15 @@ class Lines:
     def all(self):
         return [self.vertical, self.horizontal, self.left_diagonal, self.right_diagonal]
 
-def adjacent_lines(board: Board, square: Square) -> Lines:
+# Find all adjacent squares of current square on board.
+def find_adjacent_square_lines(board: Board, square: Square) -> Lines:
+    # Current square position.
     placed_position = square.position
-    
+    # Board boundary range. Left to Right at positive and Right to left as negative. 
     positive_direction = board.boundary_range.range
-    negative_direction = board.boundary_range.range[::-1]
+    negative_direction = positive_direction[::-1] # Reverse positive direction for negative directions.
 
+    # Declare variables for all available negative and poitive directions like horizontal, vertical, up left diagonal and down left diagonal
     horizontal_adjacent_squares = Line()
     vertical_adjacent_squares = Line()
     left_diagonal_adjacent_squares = Line()
@@ -115,11 +118,8 @@ def adjacent_lines(board: Board, square: Square) -> Lines:
     return Lines(vertical_adjacent_squares, horizontal_adjacent_squares, left_diagonal_adjacent_squares,right_diagonal_adjacent_squares)
 
 def is_tree_in_line(board: Board, square: Square):
-    line = adjacent_lines(board, square)
-    
-    tree_in_horizontal = len([square.piece.value for square in line.horizontal if square.is_not_blank() and square.piece.is_equal(square.piece)]) == board.dimensions
-    tree_in_vertical = len([square.piece.value for square in line.vertical if square.is_not_blank() and square.piece.is_equal(square.piece)]) == board.dimensions
-    tree_in_left_diagonal = len([square.piece.value for square in line.left_diagonal if square.is_not_blank() and square.piece.is_equal(square.piece)]) == board.dimensions
-    tree_in_right_diagonal = len([square.piece.value for square in line.right_diagonal if square.is_not_blank() and square.piece.is_equal(square.piece)]) == board.dimensions
+    lines = find_adjacent_square_lines(board, square)
 
-    return any([tree_in_horizontal, tree_in_vertical, tree_in_left_diagonal, tree_in_right_diagonal])
+    for line in lines.all():
+        if len([square for square in line if square.is_not_blank() and square.piece.is_equal(square.piece)]) == board.dimensions:
+            return True
