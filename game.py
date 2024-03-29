@@ -5,7 +5,7 @@ class Piece:
     def __init__(self, value: str):
         self.value = value
 
-    def isEqual(self, anotherPiece: 'Piece'):
+    def is_equal(self, anotherPiece: 'Piece'):
         return self.value == anotherPiece.value
 
     def __str__(self):
@@ -21,6 +21,9 @@ class Position:
         self.x = int(x)
         self.y = int(y)
     
+    def plain(self):
+        return self.x, self.y
+    
     def equal(self, another_position: 'Position'):
         return self.x == another_position.x and self.y == another_position.y
 
@@ -33,7 +36,7 @@ class Square:
         self.piece = piece
         return self
 
-    def isNotEmpty(self):
+    def is_not_blank(self):
         return self.piece.value != ' '
 
 class SquareList(List[List[Square]]):
@@ -77,19 +80,20 @@ class Line(List[Square]):
     def __init__(self, *args: List[Square], **kwargs: List[Square]):
         super().__init__(*args, **kwargs)
     
-    def is_tree_in_line(self, piece: Piece):
-        return len([x.piece.value for x in self if x.isNotEmpty() and x.piece.isEqual(piece)]) == board.dimensions
-    
 class Lines:
     vertical: Line
     horizontal: Line
     left_diagonal: Line
     right_diagonal: Line
+    
     def __init__(self, vertical: Line, horizontal: Line, left_diagonal: Line, right_diagonal: Line):
         self.vertical = vertical
         self.horizontal = horizontal
         self.left_diagonal = left_diagonal
         self.right_diagonal = right_diagonal
+    
+    def all(self):
+        return [self.vertical, self.horizontal, self.left_diagonal, self.right_diagonal]
 
 def adjacent_lines(board: Board, square: Square) -> Lines:
     placed_position = square.position
@@ -113,9 +117,9 @@ def adjacent_lines(board: Board, square: Square) -> Lines:
 def is_tree_in_line(board: Board, square: Square):
     line = adjacent_lines(board, square)
     
-    tree_in_horizontal = len([x.piece.value for x in line.horizontal if x.isNotEmpty() and x.piece.isEqual(square.piece)]) == board.dimensions
-    tree_in_vertical = len([x.piece.value for x in line.vertical if x.isNotEmpty() and x.piece.isEqual(square.piece)]) == board.dimensions
-    tree_in_left_diagonal = len([x.piece.value for x in line.left_diagonal if x.isNotEmpty() and x.piece.isEqual(square.piece)]) == board.dimensions
-    tree_in_right_diagonal = len([x.piece.value for x in line.right_diagonal if x.isNotEmpty() and x.piece.isEqual(square.piece)]) == board.dimensions
+    tree_in_horizontal = len([square.piece.value for square in line.horizontal if square.is_not_blank() and square.piece.is_equal(square.piece)]) == board.dimensions
+    tree_in_vertical = len([square.piece.value for square in line.vertical if square.is_not_blank() and square.piece.is_equal(square.piece)]) == board.dimensions
+    tree_in_left_diagonal = len([square.piece.value for square in line.left_diagonal if square.is_not_blank() and square.piece.is_equal(square.piece)]) == board.dimensions
+    tree_in_right_diagonal = len([square.piece.value for square in line.right_diagonal if square.is_not_blank() and square.piece.is_equal(square.piece)]) == board.dimensions
 
     return any([tree_in_horizontal, tree_in_vertical, tree_in_left_diagonal, tree_in_right_diagonal])

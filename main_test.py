@@ -1,62 +1,63 @@
-import main
+from game import *
+from exceptions import *
 import pytest
 
 def test_non_middle_square_board_can_not_be_builded():
-    with pytest.raises(main.InvalidBoardDimensions):
-        main.BoardBuilder(2).build()
+    with pytest.raises(InvalidBoardDimensions):
+        BoardBuilder(2).build()
 
 def test_board_with_dimensions_out_of_range_can_not_be_builded():
-    with pytest.raises(main.BoardDimensionsOutOfRange):
-        main.BoardBuilder(9).build()
+    with pytest.raises(BoardDimensionsOutOfRange):
+        BoardBuilder(9).build()
 
 def test_board_can_be_builded():
-    board = main.BoardBuilder(3).build()
-    assert isinstance(board, main.Board)
+    board = BoardBuilder(3).build()
+    assert isinstance(board, Board)
 
 def test_horizontal_is_tree_in_line():
-    piece = main.Piece('o')
-    squares = main.SquareList([
-        [main.Square(main.Position(0,0)).take(piece),main.Square(main.Position(0,1)),main.Square(main.Position(0,2))],
-        [main.Square(main.Position(1,0)).take(piece),main.Square(main.Position(1,1)),main.Square(main.Position(1,2))],
-        [main.Square(main.Position(2,0)).take(piece),main.Square(main.Position(1,2)),main.Square(main.Position(2,2))],
+    piece = Piece('o')
+    squares = SquareList([
+        [Square(Position(0,0)).take(piece),Square(Position(0,1)),Square(Position(0,2))],
+        [Square(Position(1,0)).take(piece),Square(Position(1,1)),Square(Position(1,2))],
+        [Square(Position(2,0)).take(piece),Square(Position(1,2)),Square(Position(2,2))],
     ])
 
-    boundary_range = main.BoundaryRange(0, 3)
-    board = main.Board(3, squares, boundary_range)
-    assert main.is_tree_in_line(board, main.Square(main.Position(0,0)).take(piece)) == True
+    boundary_range = BoundaryRange(0, 3)
+    board = Board(3, squares, boundary_range)
+    assert is_tree_in_line(board, Square(Position(0,0)).take(piece)) == True
 
 def test_vertical_is_tree_in_line():
-    piece = main.Piece('o')
-    squares = main.SquareList([
-        [main.Square(main.Position(0,0)).take(piece),main.Square(main.Position(0,1)).take(piece),main.Square(main.Position(0,2)).take(piece)],
-        [main.Square(main.Position(1,0)),main.Square(main.Position(1,1)),main.Square(main.Position(1,2))],
-        [main.Square(main.Position(2,0)),main.Square(main.Position(1,2)),main.Square(main.Position(2,2))],
+    piece = Piece('o')
+    squares = SquareList([
+        [Square(Position(0,0)).take(piece),Square(Position(0,1)).take(piece),Square(Position(0,2)).take(piece)],
+        [Square(Position(1,0)),Square(Position(1,1)),Square(Position(1,2))],
+        [Square(Position(2,0)),Square(Position(1,2)),Square(Position(2,2))],
     ])
 
-    boundary_range = main.BoundaryRange(0, 3)
-    board = main.Board(3, squares, boundary_range)
-    assert main.is_tree_in_line(board, main.Square(main.Position(0,0)).take(piece)) == True
+    boundary_range = BoundaryRange(0, 3)
+    board = Board(3, squares, boundary_range)
+    assert is_tree_in_line(board, Square(Position(0,0)).take(piece)) == True
 
 def test_diagonal_is_tree_in_line():
-    piece = main.Piece('o')
-    squares = main.SquareList([
-        [main.Square(main.Position(0,0)).take(piece),main.Square(main.Position(0,1)),main.Square(main.Position(0,2))],
-        [main.Square(main.Position(1,0)),main.Square(main.Position(1,1)).take(piece),main.Square(main.Position(1,2))],
-        [main.Square(main.Position(2,0)),main.Square(main.Position(1,2)),main.Square(main.Position(2,2)).take(piece)],
+    piece = Piece('o')
+    squares = SquareList([
+        [Square(Position(0,0)).take(piece),Square(Position(0,1)),Square(Position(0,2))],
+        [Square(Position(1,0)),Square(Position(1,1)).take(piece),Square(Position(1,2))],
+        [Square(Position(2,0)),Square(Position(1,2)),Square(Position(2,2)).take(piece)],
     ])
 
-    boundary_range = main.BoundaryRange(0, 3)
-    board = main.Board(3, squares, boundary_range)
+    boundary_range = BoundaryRange(0, 3)
+    board = Board(3, squares, boundary_range)
 
-    assert main.is_tree_in_line(board, main.Square(main.Position(0,0)).take(piece)) == True
+    assert is_tree_in_line(board, Square(Position(0,0)).take(piece)) == True
 
-    piece = main.Piece('o')
-    squares = main.SquareList([
-        [main.Square(main.Position(0,0)),main.Square(main.Position(0,1)),main.Square(main.Position(0,2)).take(piece)],
-        [main.Square(main.Position(1,0)),main.Square(main.Position(1,1)).take(piece),main.Square(main.Position(1,2))],
-        [main.Square(main.Position(2,0)).take(piece),main.Square(main.Position(1,2)),main.Square(main.Position(2,2))],
+    piece = Piece('o')
+    squares = SquareList([
+        [Square(Position(0,0)),Square(Position(0,1)),Square(Position(0,2)).take(piece)],
+        [Square(Position(1,0)),Square(Position(1,1)).take(piece),Square(Position(1,2))],
+        [Square(Position(2,0)).take(piece),Square(Position(1,2)),Square(Position(2,2))],
     ])
 
-    boundary_range = main.BoundaryRange(0, 3)
-    board = main.Board(3, squares, boundary_range)
+    boundary_range = BoundaryRange(0, 3)
+    board = Board(3, squares, boundary_range)
 
